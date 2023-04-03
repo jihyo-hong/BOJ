@@ -3,35 +3,47 @@
 
 using namespace std;
 
-char path[200001];
 priority_queue<int, vector<int>, greater<int>> pq;
 int ans = 0;
 int obstacle = 0;
 
+/*
+* 원래 코드
+* 1. 장애물 사이의 간격을 구함 -> pair pq에 해당 위치와 같이 저장
+* 2. 복도를 돌면서 장애물을 설치함
+* 3. 복도를 걸어감
+* 4. 나머지 처리
+* 
+* 수정사항
+* 1. 간격만 알면 됨 -> 일반 pq
+* 2. 장애물을 직접 놓을 필요 없음 -> 그냥 사칙연산으로 처리 가능
+* 3. 간격을 구하는 반복문과 복도를 걸어가는 반복문을 합침
+*/
 int main() {
     int n, m;
     cin >> n >> m;
 
     int cnt = 0;
-    for (int i = 1; i <= n; i++) {
-        cin >> path[i];
-        if (path[i] == 'X')
-            obstacle++;
-        if (cnt && path[i] == 'X') {
-            pq.push(i - cnt);
-            cnt = 0;
-        }
-        else if (path[i - 1] == 'X' && path[i] == '.')
-            cnt = i;
-    }
-
+    char c;
     bool x = false;
     for (int i = 1; i <= n; i++) {
-        if (!x)
-            path[i] == 'X' ? x = true : ans++;
-        else if (path[i] == '.') {
-            ans += 3;
-            x = false;
+        cin >> c;
+        if (c == 'X') {
+            obstacle++;
+            x = true;
+            if (cnt) {
+                pq.push(i - cnt);
+                cnt = 0;
+            }
+        }
+        else {
+            if (x) {
+                cnt = i;
+                ans += 3;
+                x = false;
+            }
+            else
+                ans++;
         }
     }
     if (x)
